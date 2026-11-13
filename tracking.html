@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FixIt — Live Concierge Tracking | Your Specialist</title>
+  <meta name="description" content="Track your FixIt specialist in real-time. Live location, arrival updates and concierge assistance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Leaflet.js Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="tracking.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="track-nav">
+    <div class="track-nav-inner">
+      <a href="index.html" class="logo">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+          <rect x="4" y="4" width="32" height="32" rx="10" stroke="url(#logoGradNav)" stroke-width="2.5" fill="rgba(56, 189, 248, 0.08)"/>
+          <path d="M14 15h12M14 20h8M14 25h10" stroke="url(#logoGradNav)" stroke-width="2.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="logoGradNav" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#818cf8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">Fix<span class="logo-accent">It</span></span>
+      </a>
+      <div class="track-nav-info">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          <span>LIVE CONCIERGE TRACKING</span>
+        </div>
+        <div class="booking-ref" id="navBookingRef">Booking: FX-247831</div>
+      </div>
+      <a href="index.html" class="back-btn" id="backBtn">&#8592; Back to Home</a>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="track-layout">
+
+    <!-- LEFT PANEL — Specialist & Status Info -->
+    <aside class="track-panel" id="trackPanel">
+
+      <!-- Specialist Card -->
+      <div class="panel-section tech-section">
+        <div class="panel-tag">✦ Assigned Specialist</div>
+        <div class="tech-card-track">
+          <div class="tech-avatar-wrap">
+            <img src="worker_plumber.jpg" alt="Rahul K." class="tech-avatar-img" id="techAvatar" />
+            <div class="tech-avatar-ring"></div>
+            <div class="tech-online-dot"></div>
+          </div>
+          <div class="tech-meta">
+            <h3 class="tech-track-name" id="techName">Rahul K.</h3>
+            <span class="tech-track-role" id="techRole">Master Plumber</span>
+            <div class="tech-track-badge">
+              <span class="tech-badge-dot"></span>
+              <span>VERIFIED FIXIT SPECIALIST</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Buttons -->
+        <div class="tech-contact-btns">
+          <button class="contact-btn call-btn" id="callBtn" onclick="handleCall()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.21 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.08-1.08a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+            Call
+          </button>
+          <button class="contact-btn chat-btn" id="chatBtn" onclick="handleChat()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+            Chat
+          </button>
+        </div>
+      </div>
+
+      <!-- ETA & Distance -->
+      <div class="panel-section eta-section">
+        <div class="panel-tag">✦ Live Arrival &amp; Status</div>
+        <div class="eta-display">
+          <div class="eta-ring-wrap">
+            <svg class="eta-ring-svg" viewBox="0 0 120 120">
+              <circle class="eta-ring-bg" cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+              <circle class="eta-ring-fill" id="etaRingFill" cx="60" cy="60" r="52" fill="none" stroke="url(#etaGrad)" stroke-width="6"
+                stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" transform="rotate(-90 60 60)"/>
+              <defs>
+                <linearGradient id="etaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#38bdf8"/>
+                  <stop offset="100%" stop-color="#818cf8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="eta-inner">
+              <div class="eta-value" id="etaValue">18</div>
+              <div class="eta-unit">MIN</div>
+            </div>
+          </div>
+
+          <div class="eta-stats-col">
+            <div class="eta-stat-row">
+              <div class="eta-stat-icon">&#128205;</div>
+              <div class="eta-stat-info">
+                <span class="eta-stat-label">Remaining Distance</span>
+                <span class="eta-stat-val" id="distValue">4.2 km</span>
+              </div>
+            </div>
+            <div class="eta-stat-row">
+              <div class="eta-stat-icon">&#9200;</div>
+              <div class="eta-stat-info">
+                <span class="eta-stat-label">Estimated Arrival</span>
+                <span class="eta-stat-val" id="arrivalTime">12:06 PM</span>
+              </div>
+            </div>
+            <div class="eta-stat-row">
+              <div class="eta-stat-icon">&#9889;</div>
+              <div class="eta-stat-info">
+                <span class="eta-stat-label">Current Status</span>
+                <span class="eta-stat-val status-active" id="currentStatus">En Route</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Timeline -->
+      <div class="panel-section timeline-section">
+        <div class="panel-tag">✦ Progress Timeline</div>
+        <div class="timeline" id="timeline">
+          <div class="tl-item done" id="tl-booked">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-title">Reservation Confirmed</div>
+              <div class="tl-time" id="tl-booked-time">11:42 AM</div>
+            </div>
+          </div>
+          <div class="tl-connector done" id="tlc-1"></div>
+          <div class="tl-item done" id="tl-assigned">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-title">Specialist Assigned</div>
+              <div class="tl-time" id="tl-assigned-time">11:45 AM</div>
+            </div>
+          </div>
+          <div class="tl-connector active" id="tlc-2"></div>
+          <div class="tl-item active" id="tl-enroute">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-title">Specialist En Route</div>
+              <div class="tl-time" id="tl-enroute-time">11:48 AM</div>
+            </div>
+          </div>
+          <div class="tl-connector" id="tlc-3"></div>
+          <div class="tl-item" id="tl-nearby">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-title">Arriving Shortly (&lt; 500m)</div>
+              <div class="tl-time" id="tl-nearby-time">Pending...</div>
+            </div>
+          </div>
+          <div class="tl-connector" id="tlc-4"></div>
+          <div class="tl-item" id="tl-arrived">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-title">Specialist At Doorstep</div>
+              <div class="tl-time" id="tl-arrived-time">Pending...</div>
+            </div>
+          </div>
+          <div class="tl-connector" id="tlc-5"></div>
+          <div class="tl-item" id="tl-completed">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-title">Service Delighted &amp; Completed</div>
+              <div class="tl-time" id="tl-completed-time">Pending...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Info -->
+      <div class="panel-section service-info-section">
+        <div class="panel-tag">✦ Service Summary</div>
+        <div class="service-info-row">
+          <span class="si-label">Category</span>
+          <span class="si-val" id="serviceDetail">Plumbing</span>
+        </div>
+        <div class="service-info-row">
+          <span class="si-label">Booking ID</span>
+          <span class="si-val cyan" id="bookingRefDetail">FX-247831</span>
+        </div>
+        <div class="service-info-row">
+          <span class="si-label">Scheduled Time</span>
+          <span class="si-val" id="scheduledTime">Today, 12:00 PM</span>
+        </div>
+        <div class="service-info-row">
+          <span class="si-label">Address</span>
+          <span class="si-val" id="customerLocationLabel">Koramangala, Bangalore</span>
+        </div>
+        <div class="service-info-row">
+          <span class="si-label">Estimated Fee</span>
+          <span class="si-val cyan" id="priceEstimate">&#8377;299 – &#8377;499</span>
+        </div>
+      </div>
+
+      <!-- Service Complete Action Box -->
+      <div class="panel-section complete-action-section" id="completeActionSection">
+        <div class="panel-tag">✦ Completion &amp; Review</div>
+        <p class="complete-hint-text" id="completeHintText">Once the specialist finishes the work to your complete satisfaction, click below to finalize and rate:</p>
+        <button class="complete-job-btn" id="completeJobBtn" onclick="triggerServiceCompletion()">
+          <span>&#11088;</span>
+          <span>Complete Service &amp; Rate</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT PANEL — Map -->
+    <div class="map-container">
+      <div id="map"></div>
+
+      <!-- Map Floating Overlay -->
+      <div class="map-hud-overlay">
+
+        <!-- Top Left: Location Label -->
+        <div class="map-hud-label" id="mapStatusLabel">
+          <span class="map-hud-dot"></span>
+          <span id="mapStatusText">Specialist moving — 4.2 km away</span>
+        </div>
+
+        <!-- Top Right: Signal Quality & Fast-Forward -->
+        <div class="map-hud-top-right">
+          <button class="hud-fastforward-btn" id="fastForwardBtn" onclick="fastForwardToCompletion()" title="Simulate technician arrival & complete service">
+            <span>&#9889;</span>
+            <span>FAST-FORWARD</span>
+          </button>
+          <div class="map-signal-box">
+            <div class="signal-bars">
+              <div class="signal-bar h1 active"></div>
+              <div class="signal-bar h2 active"></div>
+              <div class="signal-bar h3 active"></div>
+              <div class="signal-bar h4 active"></div>
+            </div>
+            <span class="signal-label">GPS LIVE</span>
+          </div>
+        </div>
+
+        <!-- Bottom Center: Speed Indicator -->
+        <div class="map-speed-box" id="speedBox">
+          <div class="speed-value" id="speedValue">28</div>
+          <div class="speed-unit">km/h</div>
+        </div>
+
+        <!-- Bottom Left: Zoom Controls -->
+        <div class="map-zoom-box">
+          <button class="map-zoom-btn" id="zoomIn" aria-label="Zoom In">+</button>
+          <button class="map-zoom-btn" id="zoomOut" aria-label="Zoom Out">−</button>
+          <button class="map-zoom-btn" id="centerBtn" aria-label="Center" title="Re-center">&#10753;</button>
+        </div>
+
+      </div>
+
+      <!-- Arrival Overlay (shown when arrived) -->
+      <div class="arrival-overlay" id="arrivalOverlay">
+        <div class="arrival-box">
+          <div class="arrival-icon">&#10003;</div>
+          <h2 class="arrival-title">Specialist Has Arrived!</h2>
+          <p class="arrival-subtitle"><span id="arrivalTechName">Rahul K.</span> is at your doorstep. Please welcome them in.</p>
+          <div class="arrival-btn-row">
+            <button class="arrival-btn secondary" id="arrivalAcknowledgeBtn" onclick="onArrivalAcknowledge()">Service In Progress</button>
+            <button class="arrival-btn primary" id="arrivalCompleteBtn" onclick="triggerServiceCompletion()">Complete &amp; Rate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Chat Popup -->
+  <div class="chat-popup" id="chatPopup">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <img src="worker_plumber.jpg" alt="Rahul" class="chat-avatar" id="chatTechImg" />
+        <div>
+          <div class="chat-name" id="chatTechName">Rahul K.</div>
+          <div class="chat-status">● Active Now</div>
+        </div>
+      </div>
+      <button class="chat-close" id="chatClose" onclick="closeChat()" aria-label="Close chat">&#x2715;</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg received">
+        <span>Hello! I'm on my way to your location. Expected arrival in approximately 18 minutes. &#128522;</span>
+        <span class="msg-time">11:48 AM</span>
+      </div>
+      <div class="chat-msg received">
+        <span>Please let me know if there are any specific entry instructions or gate codes. Thank you!</span>
+        <span class="msg-time">11:49 AM</span>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Send a message to your specialist..." />
+      <button class="chat-send-btn" id="chatSendBtn" onclick="sendMessage()">&#10148;</button>
+    </div>
+  </div>
+
+  <!-- Call Popup -->
+  <div class="call-popup" id="callPopup">
+    <div class="call-popup-inner">
+      <div class="call-avatar">
+        <img src="worker_plumber.jpg" alt="Rahul K." id="callAvatarImg" />
+        <div class="call-ring-1"></div>
+        <div class="call-ring-2"></div>
+      </div>
+      <div class="call-name" id="callTechName">Rahul K.</div>
+      <div class="call-label">Connecting via secure concierge line...</div>
+      <div class="call-btns">
+        <button class="call-end-btn" onclick="endCall()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review & Rating Modal -->
+  <div class="review-modal-overlay" id="reviewModalOverlay">
+    <div class="review-modal-box">
+      <button class="review-close-btn" onclick="closeReviewModal()" aria-label="Close review modal">&#x2715;</button>
+
+      <!-- Step 1: Review Form -->
+      <div class="review-form-view" id="reviewFormView">
+        <div class="review-hud-tag">✦ SERVICE COMPLETED</div>
+        <h2 class="review-title">How was your service?</h2>
+        <p class="review-subtitle">Your reservation is complete. Rate your experience to maintain FixIt's five-star standard.</p>
+
+        <!-- Tech Info Summary -->
+        <div class="review-tech-card">
+          <img src="worker_plumber.jpg" alt="Specialist" class="review-avatar" id="reviewAvatar" />
+          <div class="review-tech-meta">
+            <h4 class="review-tech-name" id="reviewTechName">Rahul K.</h4>
+            <span class="review-tech-role" id="reviewTechRole">Master Plumber &bull; Booking FX-247831</span>
+          </div>
+        </div>
+
+        <!-- 5-Star Interactive Rating -->
+        <div class="review-rating-block">
+          <div class="rating-prompt">Tap stars to rate:</div>
+          <div class="star-rating-row" id="starRatingRow">
+            <button type="button" class="star-rate-btn" data-score="1" aria-label="1 star">&#9733;</button>
+            <button type="button" class="star-rate-btn" data-score="2" aria-label="2 stars">&#9733;</button>
+            <button type="button" class="star-rate-btn" data-score="3" aria-label="3 stars">&#9733;</button>
+            <button type="button" class="star-rate-btn" data-score="4" aria-label="4 stars">&#9733;</button>
+            <button type="button" class="star-rate-btn" data-score="5" aria-label="5 stars">&#9733;</button>
+          </div>
+          <div class="rating-descriptor" id="ratingDescriptor">Select your rating</div>
+        </div>
+
+        <!-- Feedback Tags -->
+        <div class="review-tags-block">
+          <div class="tags-label">What made this experience peaceful?</div>
+          <div class="tags-grid" id="tagsGrid">
+            <button type="button" class="tag-pill" data-tag="Punctual Arrival">&#9201; Punctual</button>
+            <button type="button" class="tag-pill" data-tag="Master Craftsmanship">&#128295; Master Craft</button>
+            <button type="button" class="tag-pill" data-tag="Spotless Cleanliness">&#10024; Spotless Clean</button>
+            <button type="button" class="tag-pill" data-tag="Courteous & Polite">&#129309; Courteous</button>
+            <button type="button" class="tag-pill" data-tag="Clear Communication">&#128172; Great Comms</button>
+            <button type="button" class="tag-pill" data-tag="Fair Pricing">&#128176; Fair Price</button>
+          </div>
+        </div>
+
+        <!-- Feedback Comments -->
+        <div class="review-input-block">
+          <label for="reviewComments" class="review-input-label">Detailed Notes (Optional)</label>
+          <textarea id="reviewComments" class="review-textarea" rows="3" placeholder="Tell us what you appreciated or how we can make your home even calmer..."></textarea>
+        </div>
+
+        <!-- Tip Option -->
+        <div class="review-tip-block">
+          <span class="tip-label">Add a gratuity for exceptional craft:</span>
+          <div class="tip-options" id="tipOptions">
+            <button type="button" class="tip-chip active" data-tip="0">No Tip</button>
+            <button type="button" class="tip-chip" data-tip="50">&#8377;50</button>
+            <button type="button" class="tip-chip" data-tip="100">&#8377;100</button>
+            <button type="button" class="tip-chip" data-tip="200">&#8377;200</button>
+          </div>
+        </div>
+
+        <!-- Review Actions -->
+        <div class="review-actions">
+          <button type="button" class="review-submit-btn" id="submitReviewBtn" onclick="submitReview()">
+            <span>Submit Review</span>
+            <span>&#10148;</span>
+          </button>
+          <button type="button" class="review-dismiss-btn" onclick="closeReviewModal()">Skip for Now</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Submission Success State -->
+      <div class="review-success-view" id="reviewSuccessView" style="display:none;">
+        <div class="success-ring-icon">&#10003;</div>
+        <h3 class="success-heading">Review Recorded!</h3>
+        <p class="success-subheading">Thank you. Your feedback helps preserve FixIt's world-class standard.</p>
+        
+        <div class="submitted-summary-card">
+          <div class="submitted-stars-row" id="submittedStarsRow">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="submitted-score-text" id="submittedScoreText">5.0 / 5.0 &bull; Outstanding</div>
+          <p class="submitted-quote" id="submittedQuote">"Exceptional craftsmanship, super clean and fast!"</p>
+          <div class="submitted-tags-row" id="submittedTagsRow"></div>
+          <div class="submitted-meta-ref" id="submittedMetaRef">Booking Ref: FX-247831 &bull; Status: Completed &amp; Paid</div>
+        </div>
+
+        <div class="success-actions-row">
+          <a href="index.html" class="review-done-btn">&#8592; Back to Home</a>
+          <button type="button" class="review-receipt-btn" onclick="toggleReceipt()">View Receipt</button>
+        </div>
+
+        <!-- Expandable Digital Receipt -->
+        <div class="receipt-card" id="receiptCard" style="display:none;">
+          <div class="receipt-header">
+            <span>FIXIT DIGITAL INVOICE</span>
+            <span class="cyan" id="receiptBookingId">FX-247831</span>
+          </div>
+          <div class="receipt-row"><span>Service Fee</span><span id="receiptBase">&#8377;349</span></div>
+          <div class="receipt-row"><span>Specialist Gratuity</span><span id="receiptTip">&#8377;0</span></div>
+          <div class="receipt-row"><span>Taxes &amp; Insurance</span><span>&#8377;62</span></div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row total"><span>Total Paid</span><span class="cyan" id="receiptTotal">&#8377;411</span></div>
+          <div class="receipt-footer">&#10003; PAID ONLINE SECURELY</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="tracking.js"></script>
+</body>
+</html>
